@@ -13,7 +13,7 @@ similarity(beta0, beta)
 }
 \value{
 a list containing: (1) the similarity between the two beta's, defined by the
- proportion of the correct boundaries; (2) mse, the mean squre error of all the differences
+ proportion of the correct boundaries; (2) sse, sum of squre error of all the differences
  on the boundary, with repect to beta0; (3) sim.vec, a vector indicating which boundaries
  are the same.
 }

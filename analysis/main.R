@@ -48,3 +48,5 @@ plot(as.param(beta.bic$beta.seq[1, ], p, q, m))
 plot(as.param(beta.bic$beta.seq[20, ], p, q, m))
 plot(beta.bic$beta.opt)
 PlotCurve(beta.bic$beta.opt, data$G, data$T, data$N, data$time, data$status, ncol = 2)
+
+similarity(beta.bic$beta.opt , beta.real)

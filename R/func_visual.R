@@ -229,7 +229,7 @@ bic <- function(beta, G, T, N, y, cen)
 #'@param beta a "param" beta that can have one or multiple lambda values
 #'
 #'@return a list containing: (1) the similarity between the two beta's, defined by the
-#'  proportion of the correct boundaries; (2) mse, the mean squre error of all the differences
+#'  proportion of the correct boundaries; (2) sse, sum of squre error of all the differences
 #'  on the boundary, with repect to beta0; (3) sim.vec, a vector indicating which boundaries
 #'  are the same.
 #'@export
@@ -266,10 +266,10 @@ similarity <- function(beta0, beta){
     bound.ind <- (bound.val) == 0
     sim.vec <- as.vector(bound.ind == bound0.ind)
     sim <- sum(sim.vec)/(nb*m)
-    mse <- crossprod(bound.val - bound0.val)
+    sse <- crossprod(bound.val - bound0.val)
   }else{
     sim <- NULL
-    mse <- NULL
+    sse <- NULL
     sim.vec <- NULL
     for(j in 1:nlambda){
       bound.val <- Apo %*% beta[j, ]
@@ -277,11 +277,11 @@ similarity <- function(beta0, beta){
       sim.v <- as.vector(bound.ind == bound0.ind)
       sim <- c(sim, sum(sim.v))
       sim.vec <- rbind(sim.vec, sim.v)
-      mse <- c(mse, crossprod(bound.val - bound0.val))
+      sse <- c(sse, crossprod(bound.val - bound0.val))
     }
     sim <- sim/(nb*m)
   }
-  return(list(similarity = sim, mse = mse, sim.vec = sim.vec))
+  return(list(similarity = sim, sse = sse, sim.vec = sim.vec))
 }
 
 #'Function to plot the survival curves
