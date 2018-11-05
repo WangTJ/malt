@@ -26,7 +26,7 @@ data2 = dataset.gen(grid2, p2 , n2, cen.prob = 0.2, setseed = TRUE)
 
 data1$"G" = rep("sim1", n1)
 data2$"G" = rep("sim2", n2)
-data3$"G" = rep("sim3", n3)
+#data3$"G" = rep("sim3", n3)
 data = rbind(data1, data2)
 
 inibeta0 <- seq(0, 5, length.out=p*q)
@@ -48,5 +48,6 @@ plot(as.param(beta.bic$beta.seq[1, ], p, q, m))
 plot(as.param(beta.bic$beta.seq[20, ], p, q, m))
 plot(beta.bic$beta.opt)
 PlotCurve(beta.bic$beta.opt, data$G, data$T, data$N, data$time, data$status, ncol = 2)
-
 similarity(beta.bic$beta.opt , beta.real)
+
+survConcordance(sm)

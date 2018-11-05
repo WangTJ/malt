@@ -12,6 +12,9 @@
 \item{lambda.index}{when the param beta contains multiple values of the tuning parameter, the user need to
 specify the index of the tuning parameter to be summaried}
 }
+\value{
+a matrix describe he combined staging rules
+}
 \description{
 This function prints out a "param" object (see \code{\link{as.param}} for details) in a decent way. It only
  works for a param with a single lambda value.

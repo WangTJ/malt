@@ -108,6 +108,7 @@ as.param <- function(beta.vec, p, q, m = 1, G.levels = NULL, lambda = NULL)
 #'@param lambda.index when the param beta contains multiple values of the tuning parameter, the user need to
 #'  specify the index of the tuning parameter to be summaried
 #'
+#'@return a matrix describe he combined staging rules
 #'@export
 summary.param <- function(beta, lambda.index = NULL){
   lambda <- attr(beta, "lambda")
@@ -120,7 +121,7 @@ summary.param <- function(beta, lambda.index = NULL){
     G.levels <- attr(beta, "Glevels")
     if(is.null(G.levels)) G.levels <- 1:m
     Tnames <- paste("T", 1:p, sep = "")
-    Nnames <- paste("N", 1:q, sep = "")
+    Nnames <- paste("N", 0:(q-1), sep = "")
     cat("lambda = ", lambda, "\n")
     for(o in 1:m){
       cat("Group ", G.levels[o], "\n")
@@ -130,7 +131,25 @@ summary.param <- function(beta, lambda.index = NULL){
       colnames(beta0) <- Nnames
       print(beta0)
     }
+    nStage <- 1
+    beta.stage <- NULL
+    for(o in 1:m){
+      beta1 <- beta[((o-1)*p*q+1):(o*p*q)]
+      if(length(unique(beta1)) > nStage){
+        beta.stage <- beta1
+        nStage <- length(unique(beta1))
+      }
+    }
+    beta.stage <- as.factor(beta.stage)
+    levels(beta.stage) = 1:nStage
+    beta.stage = as.integer(beta.stage)
+    beta.stage <- matrix(beta.stage, p, q)
+    rownames(beta.stage) <- Tnames
+    colnames(beta.stage) <- Nnames
+    cat("Combined staging rules \n")
+    print(beta.stage)
   }
+  return(beta.stage)
 }
 
 #'Function to calculate the degrees of freedom for a "param" beta
