@@ -14,6 +14,8 @@
 #'@param trace boolen varable whether to show the process of calculation
 #'@param maxiter max number of iteration
 #'@param eps tolerance
+#'@param w_select the method to select the adaptive weight w, "plainCox" or "preDefine"
+#'@param w adaptive weight w
 #'
 #'@import survival
 #'
@@ -22,7 +24,7 @@
 #'@examples
 #'
 #'@export
-lasso.tree <- function(G, T, N, y, cen, lambda, inibeta = NULL, trace=TRUE, maxiter=200, eps=1e-4) {
+lasso.tree <- function(G, T, N, y, cen, lambda, inibeta = NULL, trace=TRUE, maxiter=200, eps=1e-4, w_select="plainCox", w=NULL) {
   n <- length(T)
   m <- length(unique(G))
   T <- as.factor(T)
@@ -75,16 +77,17 @@ lasso.tree <- function(G, T, N, y, cen, lambda, inibeta = NULL, trace=TRUE, maxi
   Apo <- as.matrix(Apo)
 
   ## Fitting the plain cox model to get w
-  suppressWarnings(model.cox <- coxph(Surv(y,cen)~X))
-  #Apo %*% as.vector(model.cox$coefficients)
-  w = NULL
-  for (i in 1:(nb*m))
-  {
-    w = c(w , Apo[i,which(Apo[i,]!=0)] %*% as.vector(model.cox$coefficients)[which(Apo[i,]!=0)])
+  if (w_select == "plainCox") {
+    suppressWarnings(model.cox <- coxph(Surv(y,cen)~X))
+    #Apo %*% as.vector(model.cox$coefficients)
+    w = NULL
+    for (i in 1:(nb*m))
+      w = c(w , Apo[i,which(Apo[i,]!=0)] %*% as.vector(model.cox$coefficients)[which(Apo[i,]!=0)])
+    w[is.na(w)]=0
+    w = pmax(w,0)
+    w = sqrt(rowSums(matrix(w^2,nb,m))+0.0001)^(-1)
   }
-  w[is.na(w)]=0
-  w = pmax(w,0)
-  w = sqrt(rowSums(matrix(w^2,nb,m))+0.0001)^(-1)
+
 
   if (missing(inibeta)) inibeta <- rep(seq(0, 1, length.out = p*q), m)
 
@@ -160,6 +163,8 @@ logPL <- function(G, T, N, y, cen, beta)
 #'@param trace boolen varable whether to show the process of calculation
 #'@param maxiter max number of iteration
 #'@param eps tolerance
+#'@param w_select the method to select the adaptive weight w, "plainCox" or "preDefine"
+#'@param w adaptive weight w
 #'
 #'@return a list including: the best solution of beta according to BIC, a vector of BIC values corresponding
 #'  to the input lambda, and a "param" beta.seq including all the beta's
@@ -167,14 +172,14 @@ logPL <- function(G, T, N, y, cen, beta)
 #'@examples
 #'
 #'@export
-lasso.tree.bic <- function(G, T, N, y, cen, lambda, inibeta = NULL, trace=TRUE, maxiter=200, eps=1e-4){
+lasso.tree.bic <- function(G, T, N, y, cen, lambda, inibeta = NULL, trace=TRUE, maxiter=200, eps=1e-4, w_select="plainCox", w=NULL){
   nlambda <- length(lambda)
   p <- length(unique(T))
   q <- length(unique(N))
   m <- length(unique(G))
   G.levels <- levels(as.factor(G))
 
-  beta.seq <- lasso.tree(G, T, N, y, cen, lambda, inibeta, trace, maxiter, eps)
+  beta.seq <- lasso.tree(G, T, N, y, cen, lambda, inibeta, trace, maxiter, eps, w_select, w)
   bics <- bic(beta.seq, G, T, N, y, cen)
 
   ind.opt <- which.min(bics)

@@ -5,7 +5,7 @@
 \title{Function to select the best beta according to BIC}
 \usage{
 lasso.tree.bic(G, T, N, y, cen, lambda, inibeta = NULL, trace = TRUE,
-  maxiter = 200, eps = 1e-04)
+  maxiter = 200, eps = 1e-04, w_select = "plainCox", w = NULL)
 }
 \arguments{
 \item{G}{label of dataset}
@@ -27,6 +27,10 @@ lasso.tree.bic(G, T, N, y, cen, lambda, inibeta = NULL, trace = TRUE,
 \item{maxiter}{max number of iteration}
 
 \item{eps}{tolerance}
+
+\item{w_select}{the method to select the adaptive weight w, "plainCox" or "preDefine"}
+
+\item{w}{adaptive weight w}
 }
 \value{
 a list including: the best solution of beta according to BIC, a vector of BIC values corresponding

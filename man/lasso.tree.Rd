@@ -5,7 +5,7 @@
 \title{The core function for lasso-tree with meta-analysis}
 \usage{
 lasso.tree(G, T, N, y, cen, lambda, inibeta = NULL, trace = TRUE,
-  maxiter = 200, eps = 1e-04)
+  maxiter = 200, eps = 1e-04, w_select = "plainCox", w = NULL)
 }
 \arguments{
 \item{G}{label of dataset}
@@ -25,6 +25,10 @@ lasso.tree(G, T, N, y, cen, lambda, inibeta = NULL, trace = TRUE,
 \item{maxiter}{max number of iteration}
 
 \item{eps}{tolerance}
+
+\item{w_select}{the method to select the adaptive weight w, "plainCox" or "preDefine"}
+
+\item{w}{adaptive weight w}
 }
 \value{
 the estimate of lambda in "param" class (see \code{\link{as.param}} for details)
