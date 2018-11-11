@@ -342,20 +342,21 @@ PlotCurve <- function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomleft"
   N.ind <- as.factor(N)
   levels(N.ind) <- 1:(nlevels(N.ind))
   stage <- beta.stage[cbind(T.ind, N.ind)]
-  stage <- as.factor(stage)
+  stage <- ordered(stage)
   df <- data.frame(G = G, time = y, cen = cen, stage = stage)
 
   oldpar <- par(no.readonly = TRUE)
   par(mfrow = c(ceiling(nlevels(G)/ncol), ncol))
 
+  colorList = palette()
   for(trial in Glevels){
     df.sub <- df[df$G == trial, ]
     fit <- survfit(Surv(time, cen) ~ stage, data = df.sub)
     par(xpd = TRUE)
-    plot(fit, mark.time = FALSE, lty = 1, col = 1:nlevels(stage), xlab = "Time",
+    plot(fit, mark.time = FALSE, lty = 1, col = colorList[sort(unique(df.sub$stage))], xlab = "Time",
          ylab = "Survival")
     #legend(max(df.sub$time), 1, levels(stage), col = 1:nlevels(stage), lty = 1, cex = 0.5)
-    legend(legend.pos, levels(stage), col = 1:nlevels(stage), lty = 1, cex = 0.6, bty = "n")
+    legend(legend.pos, levels(stage), col = colorList[1:nlevels(stage)], lty = 1, cex = 0.6, bty = "n")
     title(trial)
   }
   par(oldpar)
