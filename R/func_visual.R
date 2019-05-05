@@ -321,12 +321,19 @@ similarity <- function(beta0, beta){
 #'@param cen censor indicator, in vector
 #'@param ncol number of columns when plotting curves for each trial
 #'@param legend.pos position of the legend, "bottomright" or "topright"
+<<<<<<< HEAD
 #'@param trans transformation function of plot
+=======
+>>>>>>> 582eca0cc9e00bd8db7682d1b3d0527db0cd8b41
 #'
 #'@import survival
 #'
 #'@export
+<<<<<<< HEAD
 PlotCurve = function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomright", trans = NA)
+=======
+PlotCurve = function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomright")
+>>>>>>> 582eca0cc9e00bd8db7682d1b3d0527db0cd8b41
 {
   library(survival)
   p <- attr(beta, "p")
@@ -355,7 +362,11 @@ PlotCurve = function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomright"
     fit <- survfit(Surv(time, cen) ~ stage, data = df.sub)
     par(xpd = TRUE)
     plot(fit, mark.time = FALSE, lty = 1, col = colorList[sort(unique(df.sub$stage))], xlab = "Time",
+<<<<<<< HEAD
          ylab = "Survival",fun = trans)
+=======
+         ylab = "Survival",fun = log)
+>>>>>>> 582eca0cc9e00bd8db7682d1b3d0527db0cd8b41
     legend(legend.pos, levels(stage), col = colorList[1:nlevels(stage)], lty = 1, cex = 0.6, bty = "n", xjust = 0, yjust = 0.5)
     title(trial)
   }
