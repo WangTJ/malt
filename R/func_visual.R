@@ -131,15 +131,24 @@ summary.param <- function(beta, lambda.index = NULL){
       colnames(beta0) <- Nnames
       print(beta0)
     }
+
     nStage <- 1
-    beta.stage <- NULL
-    for(o in 1:m){
-      beta1 <- beta[((o-1)*p*q+1):(o*p*q)]
-      if(length(unique(beta1)) > nStage){
-        beta.stage <- beta1
-        nStage <- length(unique(beta1))
+    if (length(lambda)<=1){
+      beta.stage <- (beta[1:(p*q)])^2
+      for(o in 2:m){
+        beta.stage <- beta.stage + (beta[((o-1)*p*q+1):(o*p*q)])^2
       }
+      beta.stage <- sqrt(beta.stage)
     }
+    else
+    {
+      beta.stage <- (beta[lambda.index,1:(p*q)])^2
+      for(o in 2:m){
+        beta.stage <- beta.stage + (beta[lambda.index,((o-1)*p*q+1):(o*p*q)])^2
+      }
+      beta.stage <- sqrt(beta.stage)
+    }
+    nStage <- length(unique(beta.stage))
     beta.stage <- as.factor(beta.stage)
     levels(beta.stage) = 1:nStage
     beta.stage = as.integer(beta.stage)
@@ -148,8 +157,8 @@ summary.param <- function(beta, lambda.index = NULL){
     colnames(beta.stage) <- Nnames
     cat("Combined staging rules \n")
     print(beta.stage)
+    return(beta.stage)
   }
-  return(beta.stage)
 }
 
 #'Function to calculate the degrees of freedom for a "param" beta
@@ -167,12 +176,12 @@ DoF.param <- function(beta){
   nlambda <- length(attr(beta, "lambda"))
   if(nlambda <= 1){
     dof <- NULL
-    for (o in 1:m) dof = c(dof, length(unique(beta[(p*q*(o-1)+1):(p*q*o)])))
+    for (o in 1:m) dof = c(dof, 2+length(unique(beta[(p*q*(o-1)+1):(p*q*o)])))
   }else{
     dof <- NULL
     for (j in 1:nlambda){
       d <- NULL
-      for (o in 1:m) d = c(d, length(unique(beta[j, (p*q*(o-1)+1):(p*q*o)])))
+      for (o in 1:m) d = c(d, 2+length(unique(beta[j, (p*q*(o-1)+1):(p*q*o)])))
       dof <- rbind(dof, d)
     }
   }
@@ -324,17 +333,18 @@ PlotCurve <- function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomleft"
   G <- as.factor(G)
   Glevels <- levels(G)
   if(m != length(Glevels)) cat("Number of groups in beta and in G do not match!")
+
   nStage <- 1
-  beta.stage <- NULL
-  for(o in 1:m){
-    beta1 <- beta[((o-1)*p*q+1):(o*p*q)]
-    if(length(unique(beta1)) > nStage){
-      beta.stage <- beta1
-      nStage <- length(unique(beta1))
-    }
+  beta.stage <- (beta[1:(p*q)])^2
+
+  for(o in 2:m){
+    beta.stage <- beta.stage + (beta[((o-1)*p*q+1):(o*p*q)])^2
   }
+  beta.stage <- sqrt(beta.stage)
+  nStage <- length(unique(beta.stage))
   beta.stage <- as.factor(beta.stage)
-  levels(beta.stage) <- paste0("Stage", 1:nStage)
+  levels(beta.stage) = 1:nStage
+  beta.stage = as.integer(beta.stage)
   beta.stage <- matrix(beta.stage, p, q)
 
   T.ind <- as.factor(T) #the indices of T starting from 1
