@@ -320,13 +320,14 @@ similarity <- function(beta0, beta){
 #'@param y time to events, in vector
 #'@param cen censor indicator, in vector
 #'@param ncol number of columns when plotting curves for each trial
-#'@param legend.pos position of the legend, "bottomleft" or "topright"
+#'@param legend.pos position of the legend, "bottomright" or "topright"
 #'
 #'@import survival
 #'
 #'@export
-PlotCurve <- function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomleft")
+PlotCurve = function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomright")
 {
+  library(survival)
   p <- attr(beta, "p")
   q <- attr(beta, "q")
   m <- attr(beta, "m")
@@ -334,18 +335,7 @@ PlotCurve <- function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomleft"
   Glevels <- levels(G)
   if(m != length(Glevels)) cat("Number of groups in beta and in G do not match!")
 
-  nStage <- 1
-  beta.stage <- (beta[1:(p*q)])^2
-
-  for(o in 2:m){
-    beta.stage <- beta.stage + (beta[((o-1)*p*q+1):(o*p*q)])^2
-  }
-  beta.stage <- sqrt(beta.stage)
-  nStage <- length(unique(beta.stage))
-  beta.stage <- as.factor(beta.stage)
-  levels(beta.stage) = 1:nStage
-  beta.stage = as.integer(beta.stage)
-  beta.stage <- matrix(beta.stage, p, q)
+  beta.stage = summary(beta)
 
   T.ind <- as.factor(T) #the indices of T starting from 1
   levels(T.ind) <- 1:(nlevels(T.ind))
@@ -364,9 +354,8 @@ PlotCurve <- function(beta, G, T, N, y, cen, ncol = 2, legend.pos = "bottomleft"
     fit <- survfit(Surv(time, cen) ~ stage, data = df.sub)
     par(xpd = TRUE)
     plot(fit, mark.time = FALSE, lty = 1, col = colorList[sort(unique(df.sub$stage))], xlab = "Time",
-         ylab = "Survival")
-    #legend(max(df.sub$time), 1, levels(stage), col = 1:nlevels(stage), lty = 1, cex = 0.5)
-    legend(legend.pos, levels(stage), col = colorList[1:nlevels(stage)], lty = 1, cex = 0.6, bty = "n")
+         ylab = "Survival",fun = log)
+    legend(legend.pos, levels(stage), col = colorList[1:nlevels(stage)], lty = 1, cex = 0.6, bty = "n", xjust = 0, yjust = 0.5)
     title(trial)
   }
   par(oldpar)
